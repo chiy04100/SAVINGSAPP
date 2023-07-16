@@ -1,6 +1,6 @@
 version: '3.7'
 
-services: 
+services:
   db:
     image: mysql:5.7
     platform: linux/amd64
@@ -13,6 +13,7 @@ services:
       - 4306:3306
     volumes:
       - mysql-db:/var/lib/mysql
+
   api:
     tty: true
     depends_on:
@@ -25,7 +26,8 @@ services:
     volumes:
       - ./api:/app
     command: rails server -b 0.0.0.0
-  front: 
+
+  front:
     build:
       context: ./front/
       dockerfile: Dockerfile
@@ -34,6 +36,7 @@ services:
     command: 'yarn dev'
     ports:
       - "8000:3000"
+
   vue-app:
     build:
       context: ./vueApp/
@@ -42,10 +45,23 @@ services:
     environment:
       - NODE_ENV=development
     volumes:
-    - ./vueApp:/usr/src/app
+      - ./vueApp:/usr/src/app
     command: sh -c "cd vue-sample && npm run serve"
     ports:
-    - "8080:8080"
+      - "8080:8080"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - MYSQL_ROOT_PASSWORD=password
+      - PMA_USER=root
+      - PMA_PASSWORD=password
+    ports:
+      - 4040:80
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
+
 volumes:
   mysql-db:
     driver: local
